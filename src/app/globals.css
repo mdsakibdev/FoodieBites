@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* daisyUI is loaded as a Tailwind v4 plugin (there is no tailwind.config.js). */
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
+
+/* Brand theme for FoodieBites, derived from the reference restaurant design. */
+@plugin "daisyui/theme" {
+  name: "foodiebites";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #fffdf8;
+  --color-base-200: #fbf4e8;
+  --color-base-300: #f3e7d2;
+  --color-base-content: #2b211a;
+
+  --color-primary: #f59e0b;
+  --color-primary-content: #ffffff;
+  --color-secondary: #e9744a;
+  --color-secondary-content: #ffffff;
+  --color-accent: #fbbf24;
+  --color-accent-content: #2b211a;
+  --color-neutral: #2b211a;
+  --color-neutral-content: #fff8ef;
+
+  --color-info: #3b82f6;
+  --color-info-content: #ffffff;
+  --color-success: #16a34a;
+  --color-success-content: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-content: #2b211a;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 999px;
+  --radius-field: 999px;
+  --radius-box: 1.5rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-cream: #fbf4e8;
+  --color-blush: #fdecea;
+  --color-ink: #2b211a;
+  --shadow-soft: 0 18px 45px -25px rgba(43, 33, 26, 0.45);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --animate-marquee: marquee 30s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--color-base-200);
+    color: var(--color-base-content);
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1.25rem;
+
+  @media (min-width: 640px) {
+    padding-inline: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding-inline: 2.5rem;
+  }
 }

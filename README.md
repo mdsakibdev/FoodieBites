@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FoodieBites
 
-## Getting Started
+A responsive restaurant storefront built with the Next.js App Router, TypeScript,
+Tailwind CSS v4 + daisyUI, Framer Motion, BetterAuth and MongoDB. It includes a
+marketing home page, a filterable menu of 15 dishes, protected dish detail pages,
+a per-user cart and a dashboard for profile settings.
 
-First, run the development server:
+## Features
+
+- **Home page** — hero with search, scrolling offer marquee, six featured dishes,
+  category-filtered menu pack, services, reservation dialog, testimonials, chefs
+  and an app-download banner.
+- **Menu** (`/menu`) — 15 dishes across six categories with server-side search
+  (`?q=`) and category filtering (`?category=`).
+- **Dish details** (`/products/[id]`) — full description, ingredients, nutrition
+  facts, quantity picker, add-to-cart and related dishes. **Sign-in required.**
+- **Cart** (`/cart`) — per-user cart stored in MongoDB, quantity controls, demo
+  checkout summary and order confirmation. **Sign-in required.**
+- **Auth** — BetterAuth email + password sign-up / sign-in with sessions in
+  MongoDB; `/profile` is protected and re-validates the session server-side.
+- **Dashboard** (`/profile`) — account overview, display-name update, password
+  change and cart totals. **Sign-in required.**
+- Animations with Framer Motion (page transitions + scroll reveals), fully
+  mobile-first layout, custom daisyUI theme and a custom favicon.
+
+## Getting started
+
+Requirements: Node.js 20.19+ (24 recommended) and MongoDB 7.
 
 ```bash
+npm install
+cp .env.local.example .env.local   # Windows: copy .env.local.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Start MongoDB with Docker (standalone, matching the default connection string):
 
-## Learn More
+```bash
+docker compose up -d
+```
 
-To learn more about Next.js, take a look at the following resources:
+Then load the catalogue:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run seed
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app works without MongoDB — pages fall back to the bundled catalogue in
+`src/data/products.ts` and log a warning — but auth, carts and profile settings
+need a running database.
 
-## Deploy on Vercel
+### Environment variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable | Default | Notes |
+| --- | --- | --- |
+| `MONGODB_URI` | `mongodb://127.0.0.1:27017/foodiebites` | Connection string |
+| `MONGODB_DB` | `foodiebites` | Database name |
+| `BETTER_AUTH_SECRET` | development fallback | **Set this in production** |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Base URL for auth |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` / `npm start` | Production build and server |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run seed` | Upsert the 15 products into MongoDB |
+| `npm run fetch:assets` | Re-download the images in `public/images` |
+
+## Project structure
+
+```
+src/
+├── app/                 # routes, API handlers, global styles, layout, template
+├── components/          # auth, cart, home, layout, products, profile, ui
+├── data/                # canonical products + site content
+└── lib/                 # auth, MongoDB, product + cart data access, helpers
+scripts/                 # seed script and image fetcher
+```
+
+Server data access lives in `src/lib`; interactive pieces (cart, forms, carousels)
+are client components. Nuxt-style route protection is handled by `src/proxy.ts`
+(Next.js 16's replacement for middleware) plus a server-side session check on
+protected pages.
+
+## Images
+
+Dish photos come from Wikimedia Commons and the people/hero photos from Unsplash.
+Attribution for the Commons files is recorded in `public/images/ATTRIBUTION.md`.
+
+## Demo notes
+
+- Checkout is a mock: it clears the cart and shows a confirmation, and no
+  payment is taken or order stored.
+- The reservation form validates input but does not persist reservations.
+- Email verification and password reset are intentionally out of scope.
