@@ -44,8 +44,8 @@ export function SignUpForm() {
 
     setPending(true);
     const { error: signUpError } = await authClient.signUp.email({
-      name,
-      email,
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
       password,
     });
 
@@ -55,7 +55,9 @@ export function SignUpForm() {
       return;
     }
 
-    router.push(next.startsWith("/") ? next : "/profile");
+    const target =
+      next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
+    router.push(target);
     router.refresh();
   }
 

@@ -32,7 +32,8 @@ export function SignInForm() {
       return;
     }
 
-    router.push(next.startsWith("/") ? next : "/");
+    const target = next.startsWith("/") && !next.startsWith("//") ? next : "/";
+    router.push(target);
     router.refresh();
   }
 

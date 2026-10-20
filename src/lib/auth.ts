@@ -1,37 +1,25 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
-import { nextCookies } from "better-auth/next-js";
-import { getDb } from "./mongodb";
+import { getMongoClient, MONGODB_DATABASE } from "./mongodb";
 
 /**
  * BetterAuth server instance. Email + password only, sessions persisted in
- * MongoDB by the official adapter. `nextCookies()` must stay last so cookies
- * set by server actions/route handlers are forwarded to the browser.
+ * MongoDB by the official adapter.
+ *
+ * The client is reused from `./mongodb` so auth and app data share one
+ * connection pool (and the same `MONGODB_URI` / `MONGODB_DB` settings). It
+ * connects lazily, so importing this module never opens a socket.
  */
-const secret =
-  process.env.BETTER_AUTH_SECRET ?? "foodiebites-development-secret-change-me";
-
-if (!process.env.BETTER_AUTH_SECRET) {
-  console.warn(
-    "[auth] BETTER_AUTH_SECRET is not set. Falling back to an insecure development secret — set it in .env.local before deploying.",
-  );
-}
+const client = getMongoClient();
 
 export const auth = betterAuth({
   appName: "FoodieBites",
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
-  secret,
-  database: mongodbAdapter(getDb()),
+  database: mongodbAdapter(client.db(MONGODB_DATABASE), { client }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
   },
-  session: {
-    expiresIn: 60 * 60 * 24 * 30,
-    updateAge: 60 * 60 * 24,
-  },
-  plugins: [nextCookies()],
 });
 
 export type Session = typeof auth.$Infer.Session;
