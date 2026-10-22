@@ -84,14 +84,16 @@ export function SignUpForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* OAuth Callback Error */}
       {callbackError ? (
-        <div role="alert" className="alert alert-error text-sm">
-          <AlertCircle className="size-4" />
+        <div role="alert" className="alert alert-error text-sm rounded-xl">
+          <AlertCircle className="size-4 shrink-0" />
           <span>{callbackError}</span>
         </div>
       ) : null}
 
+      {/* Google Auth Button */}
       {googleEnabled ? (
         <GoogleAuthButton
           next={target}
@@ -100,69 +102,80 @@ export function SignUpForm({
         />
       ) : null}
 
+      {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Sign Up Error Alert */}
         {error ? (
-          <div role="alert" className="alert alert-error text-sm">
-            <AlertCircle className="size-4" />
+          <div role="alert" className="alert alert-error text-sm rounded-xl">
+            <AlertCircle className="size-4 shrink-0" />
             <span>{error}</span>
           </div>
         ) : null}
 
-        <label className="form-control w-full">
-          <span className="label-text mb-1 font-semibold text-ink">
+        {/* Full Name Field */}
+        <div className="form-control w-full">
+          <label htmlFor="name" className="label-text mb-1.5 font-medium text-ink">
             Full name
-          </span>
+          </label>
           <div className="relative">
-            <UserRound className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+            <UserRound className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-base-content/40" />
             <input
+              id="name"
               required
               type="text"
               autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Alex Morgan"
-              className="input input-bordered w-full rounded-xl pl-10"
+              className="input input-bordered w-full rounded-xl pl-10.5 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
-        </label>
+        </div>
 
-        <label className="form-control w-full">
-          <span className="label-text mb-1 font-semibold text-ink">Email</span>
+        {/* Email Field */}
+        <div className="form-control w-full">
+          <label htmlFor="email" className="label-text mb-1.5 font-medium text-ink">
+            Email address
+          </label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-base-content/40" />
             <input
+              id="email"
               required
               type="email"
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
-              className="input input-bordered w-full rounded-xl pl-10"
+              className="input input-bordered w-full rounded-xl pl-10.5 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
-        </label>
+        </div>
 
+        {/* Password & Confirm Password Grid */}
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="form-control w-full">
-            <span className="label-text mb-1 font-semibold text-ink">
+          {/* Password */}
+          <div className="form-control w-full">
+            <label htmlFor="password" className="label-text mb-1.5 font-medium text-ink">
               Password
-            </span>
+            </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-base-content/40" />
               <input
+                id="password"
                 required
                 minLength={8}
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Min. 8 characters"
-                className="input input-bordered w-full rounded-xl pl-10 pr-11"
+                placeholder="Min. 8 chars"
+                className="input input-bordered w-full rounded-xl pl-10.5 pr-11 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-2 text-base-content/50 transition hover:text-primary"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-base-content/50 transition-colors hover:text-ink focus:outline-none"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -172,22 +185,24 @@ export function SignUpForm({
                 )}
               </button>
             </div>
-          </label>
+          </div>
 
-          <label className="form-control w-full">
-            <span className="label-text mb-1 font-semibold text-ink">
-              Confirm
-            </span>
+          {/* Confirm Password */}
+          <div className="form-control w-full">
+            <label htmlFor="confirmPassword" className="label-text mb-1.5 font-medium text-ink">
+              Confirm password
+            </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-base-content/40" />
               <input
+                id="confirmPassword"
                 required
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 placeholder="Repeat password"
-                className={`input input-bordered w-full rounded-xl pl-10 ${
+                className={`input input-bordered w-full rounded-xl pl-10.5 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                   passwordMismatch ? "input-error" : ""
                 }`}
               />
@@ -197,17 +212,20 @@ export function SignUpForm({
                 Passwords do not match.
               </span>
             ) : null}
-          </label>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={pending || passwordMismatch}
-          className="btn btn-primary w-full rounded-full font-semibold"
-        >
-          {pending ? <Loader2 className="size-4 animate-spin" /> : null}
-          Create account
-        </button>
+        {/* Submit Button */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={pending || passwordMismatch}
+            className="btn btn-primary w-full rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-[0.99]"
+          >
+            {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+            Create account
+          </button>
+        </div>
       </form>
     </div>
   );

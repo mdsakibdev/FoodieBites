@@ -58,14 +58,16 @@ export function SignInForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* OAuth Callback Error */}
       {callbackError ? (
-        <div role="alert" className="alert alert-error text-sm">
-          <AlertCircle className="size-4" />
+        <div role="alert" className="alert alert-error text-sm rounded-xl">
+          <AlertCircle className="size-4 shrink-0" />
           <span>{callbackError}</span>
         </div>
       ) : null}
 
+      {/* Google Auth Button */}
       {googleEnabled ? (
         <GoogleAuthButton
           next={target}
@@ -74,49 +76,57 @@ export function SignInForm({
         />
       ) : null}
 
+      {/* Main Credentials Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Sign In Error Alert */}
         {error ? (
-          <div role="alert" className="alert alert-error text-sm">
-            <AlertCircle className="size-4" />
+          <div role="alert" className="alert alert-error text-sm rounded-xl">
+            <AlertCircle className="size-4 shrink-0" />
             <span>{error}</span>
           </div>
         ) : null}
 
-        <label className="form-control w-full">
-          <span className="label-text mb-1 font-semibold text-ink">Email</span>
+        {/* Email Input Field */}
+        <div className="form-control w-full">
+          <label htmlFor="email" className="label-text mb-1.5 font-medium text-ink">
+            Email address
+          </label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-base-content/40" />
             <input
+              id="email"
               required
               type="email"
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
-              className="input input-bordered w-full rounded-xl pl-10"
+              className="input input-bordered w-full rounded-xl pl-10.5 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
-        </label>
+        </div>
 
-        <label className="form-control w-full">
-          <span className="label-text mb-1 font-semibold text-ink">
+        {/* Password Input Field */}
+        <div className="form-control w-full">
+          <label htmlFor="password" className="label-text mb-1.5 font-medium text-ink">
             Password
-          </span>
+          </label>
           <div className="relative">
-            <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+            <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-base-content/40" />
             <input
+              id="password"
               required
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Your password"
-              className="input input-bordered w-full rounded-xl pl-10 pr-12"
+              placeholder="••••••••"
+              className="input input-bordered w-full rounded-xl pl-10.5 pr-11 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             <button
               type="button"
               onClick={() => setShowPassword((value) => !value)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-base-content/50 transition hover:text-primary"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-base-content/50 transition-colors hover:text-ink focus:outline-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -126,16 +136,19 @@ export function SignInForm({
               )}
             </button>
           </div>
-        </label>
+        </div>
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="btn btn-primary w-full rounded-full font-semibold"
-        >
-          {pending ? <Loader2 className="size-4 animate-spin" /> : null}
-          Sign in
-        </button>
+        {/* Submit Button */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={pending}
+            className="btn btn-primary w-full rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-[0.99]"
+          >
+            {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+            Sign in
+          </button>
+        </div>
       </form>
     </div>
   );
