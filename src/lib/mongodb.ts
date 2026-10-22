@@ -1,6 +1,9 @@
 import { MongoClient, type Db } from "mongodb";
 
-const uri = process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017/foodiebites";
+const uri =
+  process.env.MONGODB_URI ??
+  process.env.MONGODB_URL ??
+  "mongodb://127.0.0.1:27017/foodiebites";
 const dbName = process.env.MONGODB_DB ?? "foodiebites";
 
 declare global {
@@ -16,8 +19,11 @@ declare global {
 export function getMongoClient(): MongoClient {
   if (!global._foodieBitesMongoClient) {
     global._foodieBitesMongoClient = new MongoClient(uri, {
-      serverSelectionTimeoutMS: 3000,
-      connectTimeoutMS: 3000,
+      appName: "FoodieBites",
+      // Vercel functions cold-start far from the database, so allow more time
+      // than the old 3s before giving up on Atlas.
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
     });
   }
   return global._foodieBitesMongoClient;

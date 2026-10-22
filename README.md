@@ -57,10 +57,31 @@ need a running database.
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `MONGODB_URI` | `mongodb://127.0.0.1:27017/foodiebites` | Connection string |
+| `MONGODB_URI` | `mongodb://127.0.0.1:27017/foodiebites` | Connection string (`MONGODB_URL` also accepted) |
 | `MONGODB_DB` | `foodiebites` | Database name |
-| `BETTER_AUTH_SECRET` | development fallback | **Set this in production** |
-| `BETTER_AUTH_URL` | `http://localhost:3000` | Base URL for auth |
+| `BETTER_AUTH_SECRET` | development fallback | **Required in production** |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Public app URL used by auth |
+
+## Deploying to Vercel
+
+Add these variables to the Vercel project before the first production deploy
+(Project → Settings → Environment Variables):
+
+| Variable | Production value |
+| --- | --- |
+| `MONGODB_URI` | Your MongoDB Atlas connection string |
+| `MONGODB_DB` | `foodiebites` |
+| `BETTER_AUTH_SECRET` | A long random secret (`openssl rand -base64 32`) |
+| `BETTER_AUTH_URL` | `https://foodie-bites-tau.vercel.app` |
+
+Do **not** copy the local `BETTER_AUTH_URL=http://localhost:3000` to Vercel:
+Better Auth validates the request origin against this URL, so production must
+use the public HTTPS domain. If you deploy to a different domain, update this
+value and the aliases in `src/lib/auth.ts`.
+
+Environment variable changes only apply to new deployments, so redeploy after
+editing them. MongoDB Atlas must also allow connections from Vercel (Network
+Access → `0.0.0.0/0` is the simplest option for a demo project).
 
 ## Scripts
 

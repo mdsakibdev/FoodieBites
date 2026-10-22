@@ -21,20 +21,32 @@ export function SignInForm() {
     setError(null);
     setPending(true);
 
-    const { error: signInError } = await authClient.signIn.email({
-      email,
-      password,
-    });
+    try {
+      const { error: signInError } = await authClient.signIn.email({
+        email: email.trim().toLowerCase(),
+        password,
+      });
 
-    if (signInError) {
-      setError(signInError.message ?? "Unable to sign in. Please try again.");
+      if (signInError) {
+        setError(
+          signInError.message ||
+            signInError.statusText ||
+            "Unable to sign in. Please try again.",
+        );
+        return;
+      }
+
+      const target =
+        next.startsWith("/") && !next.startsWith("//") ? next : "/";
+      router.push(target);
+      router.refresh();
+    } catch {
+      setError(
+        "We couldn't reach the server. Check your connection and try again.",
+      );
+    } finally {
       setPending(false);
-      return;
     }
-
-    const target = next.startsWith("/") && !next.startsWith("//") ? next : "/";
-    router.push(target);
-    router.refresh();
   }
 
   return (

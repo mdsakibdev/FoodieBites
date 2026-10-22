@@ -43,22 +43,33 @@ export function SignUpForm() {
     }
 
     setPending(true);
-    const { error: signUpError } = await authClient.signUp.email({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      password,
-    });
+    try {
+      const { error: signUpError } = await authClient.signUp.email({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
 
-    if (signUpError) {
-      setError(signUpError.message ?? "Unable to create your account.");
+      if (signUpError) {
+        setError(
+          signUpError.message ||
+            signUpError.statusText ||
+            "Unable to create your account. Please try again.",
+        );
+        return;
+      }
+
+      const target =
+        next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
+      router.push(target);
+      router.refresh();
+    } catch {
+      setError(
+        "We couldn't reach the server. Check your connection and try again.",
+      );
+    } finally {
       setPending(false);
-      return;
     }
-
-    const target =
-      next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
-    router.push(target);
-    router.refresh();
   }
 
   return (
