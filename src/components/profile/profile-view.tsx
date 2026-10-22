@@ -24,6 +24,18 @@ const memberFormat = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
+/** Accept direct HTTPS image links and local public paths such as `/images/me.jpg`. */
+function isAcceptableImageUrl(value: string): boolean {
+  if (value.startsWith("/")) {
+    return !value.startsWith("//");
+  }
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function ProfileView({
   name: initialName,
   email,
@@ -39,6 +51,7 @@ export function ProfileView({
   const { count, subtotal } = useCart();
 
   const [name, setName] = useState(initialName);
+  const [imageUrl, setImageUrl] = useState(image ?? "");
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{
     tone: "success" | "error";
@@ -56,9 +69,31 @@ export function ProfileView({
 
   async function saveProfile(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const trimmedName = name.trim();
+    const trimmedImageUrl = imageUrl.trim();
+
+    if (!trimmedName) {
+      setProfileMessage({
+        tone: "error",
+        text: "Please enter your name.",
+      });
+      return;
+    }
+
+    if (trimmedImageUrl && !isAcceptableImageUrl(trimmedImageUrl)) {
+      setProfileMessage({
+        tone: "error",
+        text: "Use an https:// image link or a path that starts with /.",
+      });
+      return;
+    }
+
     setSavingProfile(true);
     setProfileMessage(null);
-    const { error } = await authClient.updateUser({ name });
+    const { error } = await authClient.updateUser({
+      name: trimmedName,
+      image: trimmedImageUrl || null,
+    });
     setSavingProfile(false);
     if (error) {
       setProfileMessage({
@@ -67,6 +102,8 @@ export function ProfileView({
       });
       return;
     }
+    setName(trimmedName);
+    setImageUrl(trimmedImageUrl);
     setProfileMessage({ tone: "success", text: "Profile updated." });
     router.refresh();
   }
@@ -208,6 +245,47 @@ export function ProfileView({
               className="input input-bordered w-full rounded-xl"
             />
           </label>
+
+          <div className="mt-4 rounded-xl border border-base-300 bg-base-200/40 p-3">
+            <div className="flex items-center gap-3">
+              <UserAvatar
+                key={imageUrl}
+                name={name}
+                image={imageUrl.trim() || null}
+                className="size-14 shrink-0 text-xl ring-2 ring-primary/20"
+              />
+              <label className="form-control min-w-0 flex-1">
+                <span className="label-text mb-1 font-semibold">
+                  Profile photo URL
+                </span>
+                <input
+                  type="text"
+                  inputMode="url"
+                  spellCheck={false}
+                  maxLength={2048}
+                  value={imageUrl}
+                  onChange={(event) => setImageUrl(event.target.value)}
+                  placeholder="https://example.com/photo.jpg"
+                  className="input input-bordered w-full rounded-xl"
+                />
+              </label>
+            </div>
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <p className="text-xs text-base-content/60">
+                Use a direct https:// image link. Leave blank to use your
+                initial.
+              </p>
+              {imageUrl ? (
+                <button
+                  type="button"
+                  onClick={() => setImageUrl("")}
+                  className="btn btn-ghost btn-xs shrink-0"
+                >
+                  Clear
+                </button>
+              ) : null}
+            </div>
+          </div>
 
           <label className="form-control mt-4 w-full">
             <span className="label-text mb-1 font-semibold">Email</span>
