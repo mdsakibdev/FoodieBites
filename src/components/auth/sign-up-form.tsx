@@ -12,11 +12,24 @@ import {
   UserRound,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { oauthErrorMessage } from "@/components/auth/oauth-error";
 
-export function SignUpForm() {
+export function SignUpForm({
+  googleEnabled = false,
+}: {
+  googleEnabled?: boolean;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/profile";
+  const target =
+    next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
+  const callbackError = oauthErrorMessage(searchParams.get("error"));
+  const errorCallbackURL =
+    target === "/profile"
+      ? "/sign-up"
+      : `/sign-up?next=${encodeURIComponent(target)}`;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,8 +72,6 @@ export function SignUpForm() {
         return;
       }
 
-      const target =
-        next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
       router.push(target);
       router.refresh();
     } catch {
@@ -73,114 +84,131 @@ export function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error ? (
+    <div className="space-y-4">
+      {callbackError ? (
         <div role="alert" className="alert alert-error text-sm">
           <AlertCircle className="size-4" />
-          <span>{error}</span>
+          <span>{callbackError}</span>
         </div>
       ) : null}
 
-      <label className="form-control w-full">
-        <span className="label-text mb-1 font-semibold text-ink">
-          Full name
-        </span>
-        <div className="relative">
-          <UserRound className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
-          <input
-            required
-            type="text"
-            autoComplete="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Alex Morgan"
-            className="input input-bordered w-full rounded-xl pl-10"
-          />
-        </div>
-      </label>
+      {googleEnabled ? (
+        <GoogleAuthButton
+          next={target}
+          errorCallbackURL={errorCallbackURL}
+          dividerLabel="or sign up with email"
+        />
+      ) : null}
 
-      <label className="form-control w-full">
-        <span className="label-text mb-1 font-semibold text-ink">Email</span>
-        <div className="relative">
-          <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
-          <input
-            required
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="you@example.com"
-            className="input input-bordered w-full rounded-xl pl-10"
-          />
-        </div>
-      </label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error ? (
+          <div role="alert" className="alert alert-error text-sm">
+            <AlertCircle className="size-4" />
+            <span>{error}</span>
+          </div>
+        ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
         <label className="form-control w-full">
           <span className="label-text mb-1 font-semibold text-ink">
-            Password
+            Full name
           </span>
           <div className="relative">
-            <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+            <UserRound className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
             <input
               required
-              minLength={8}
-              type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Min. 8 characters"
-              className="input input-bordered w-full rounded-xl pl-10 pr-11"
+              type="text"
+              autoComplete="name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Alex Morgan"
+              className="input input-bordered w-full rounded-xl pl-10"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((value) => !value)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-2 text-base-content/50 transition hover:text-primary"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <EyeOff className="size-4" />
-              ) : (
-                <Eye className="size-4" />
-              )}
-            </button>
           </div>
         </label>
 
         <label className="form-control w-full">
-          <span className="label-text mb-1 font-semibold text-ink">
-            Confirm
-          </span>
+          <span className="label-text mb-1 font-semibold text-ink">Email</span>
           <div className="relative">
-            <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+            <Mail className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
             <input
               required
-              type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder="Repeat password"
-              className={`input input-bordered w-full rounded-xl pl-10 ${
-                passwordMismatch ? "input-error" : ""
-              }`}
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              className="input input-bordered w-full rounded-xl pl-10"
             />
           </div>
-          {passwordMismatch ? (
-            <span className="mt-1 text-xs text-error">
-              Passwords do not match.
+        </label>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="form-control w-full">
+            <span className="label-text mb-1 font-semibold text-ink">
+              Password
             </span>
-          ) : null}
-        </label>
-      </div>
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+              <input
+                required
+                minLength={8}
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Min. 8 characters"
+                className="input input-bordered w-full rounded-xl pl-10 pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-2 text-base-content/50 transition hover:text-primary"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+              </button>
+            </div>
+          </label>
 
-      <button
-        type="submit"
-        disabled={pending || passwordMismatch}
-        className="btn btn-primary w-full rounded-full font-semibold"
-      >
-        {pending ? <Loader2 className="size-4 animate-spin" /> : null}
-        Create account
-      </button>
-    </form>
+          <label className="form-control w-full">
+            <span className="label-text mb-1 font-semibold text-ink">
+              Confirm
+            </span>
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-base-content/45" />
+              <input
+                required
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder="Repeat password"
+                className={`input input-bordered w-full rounded-xl pl-10 ${
+                  passwordMismatch ? "input-error" : ""
+                }`}
+              />
+            </div>
+            {passwordMismatch ? (
+              <span className="mt-1 text-xs text-error">
+                Passwords do not match.
+              </span>
+            ) : null}
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={pending || passwordMismatch}
+          className="btn btn-primary w-full rounded-full font-semibold"
+        >
+          {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+          Create account
+        </button>
+      </form>
+    </div>
   );
 }

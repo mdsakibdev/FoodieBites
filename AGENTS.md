@@ -19,7 +19,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Icons come from `lucide-react`. Brand icons were removed upstream, so the social
   icons in the footer are small inline SVGs.
 - Auth and data: BetterAuth (`src/lib/auth.ts`) with the MongoDB adapter. The
-  browser client is `src/lib/auth-client.ts`.
+  browser client is `src/lib/auth-client.ts`. Google OAuth activates when
+  `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set; the callback URL is
+  `/api/auth/callback/google`. Google profile pictures are imported into
+  `user.image` on sign-up/link and can be replaced from the dashboard.
 - Cart documents are per user in the `carts` collection. The API lives at
   `src/app/api/cart/route.ts` and is mirrored in the client by
   `src/components/cart/cart-provider.tsx`.

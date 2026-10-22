@@ -272,7 +272,8 @@ export function ProfileView({
             </div>
             <div className="mt-2 flex items-center justify-between gap-3">
               <p className="text-xs text-base-content/60">
-                Use a direct https:// image link. Leave blank to use your
+                Google sign-in photos are imported automatically. Use a
+                direct https:// link to override, or leave blank for your
                 initial.
               </p>
               {imageUrl ? (

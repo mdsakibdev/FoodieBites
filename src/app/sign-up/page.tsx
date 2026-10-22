@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function SignUpPage() {
+  const googleEnabled = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+  );
+
   return (
     <AuthShell
       title="Create your account"
@@ -27,7 +31,7 @@ export default function SignUpPage() {
       }
     >
       <Suspense fallback={<div className="skeleton h-96 w-full rounded-box" />}>
-        <SignUpForm />
+        <SignUpForm googleEnabled={googleEnabled} />
       </Suspense>
     </AuthShell>
   );

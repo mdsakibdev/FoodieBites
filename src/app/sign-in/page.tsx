@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function SignInPage() {
+  const googleEnabled = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+  );
+
   return (
     <AuthShell
       title="Welcome back"
@@ -27,7 +31,7 @@ export default function SignInPage() {
       }
     >
       <Suspense fallback={<div className="skeleton h-72 w-full rounded-box" />}>
-        <SignInForm />
+        <SignInForm googleEnabled={googleEnabled} />
       </Suspense>
     </AuthShell>
   );
