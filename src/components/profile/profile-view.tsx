@@ -14,6 +14,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCart } from "@/components/cart/cart-provider";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { authClient } from "@/lib/auth-client";
 import { formatPrice } from "@/lib/format";
 
@@ -26,10 +27,12 @@ const memberFormat = new Intl.DateTimeFormat("en-US", {
 export function ProfileView({
   name: initialName,
   email,
+  image,
   createdAt,
 }: {
   name: string;
   email: string;
+  image?: string | null;
   createdAt: string;
 }) {
   const router = useRouter();
@@ -115,16 +118,17 @@ export function ProfileView({
     router.refresh();
   }
 
-  const initial = (name.trim()[0] ?? "U").toUpperCase();
   const memberSince = memberFormat.format(new Date(createdAt));
 
   return (
     <div className="space-y-6">
       <section className="flex flex-col gap-5 rounded-box border border-base-300 bg-base-100 p-6 shadow-soft sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <span className="grid size-16 place-items-center rounded-full bg-primary text-2xl font-extrabold text-primary-content">
-            {initial}
-          </span>
+          <UserAvatar
+            name={name}
+            image={image}
+            className="size-16 text-2xl ring-4 ring-primary/15"
+          />
           <div>
             <h1 className="text-2xl font-extrabold text-ink">{name}</h1>
             <p className="mt-1 flex items-center gap-1.5 text-sm text-base-content/65">

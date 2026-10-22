@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { CartBadge } from "@/components/cart/cart-badge";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { NAV_LINKS } from "@/data/site";
 import { authClient } from "@/lib/auth-client";
 
@@ -107,36 +108,18 @@ export function Navbar() {
           {isPending ? (
             <span className="skeleton size-9 rounded-full" />
           ) : session ? (
-            <div className="dropdown dropdown-end">
-              <button
-                type="button"
-                tabIndex={0}
-                className="btn btn-ghost btn-circle avatar"
-                aria-label="Account menu"
-              >
-                <span className="grid size-9 place-items-center rounded-full bg-primary text-sm font-bold text-primary-content">
-                  {(session.user.name?.[0] ?? "U").toUpperCase()}
-                </span>
-              </button>
-              <ul className="dropdown-content menu z-50 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-soft">
-                <li className="menu-title text-xs">
-                  {session.user.name}
-                  <span className="block truncate text-[11px] font-normal opacity-60">
-                    {session.user.email}
-                  </span>
-                </li>
-                <li>
-                  <Link href="/profile">
-                    <LayoutDashboard className="size-4" /> My dashboard
-                  </Link>
-                </li>
-                <li>
-                  <button type="button" onClick={handleSignOut}>
-                    <LogOut className="size-4" /> Sign out
-                  </button>
-                </li>
-              </ul>
-            </div>
+            <Link
+              href="/profile"
+              aria-label="Open your dashboard"
+              title="Open your dashboard"
+              className="btn btn-ghost btn-circle avatar transition hover:brightness-105"
+            >
+              <UserAvatar
+                name={session.user.name}
+                image={session.user.image}
+                className="size-9 text-sm ring-2 ring-primary/25"
+              />
+            </Link>
           ) : (
             <Link
               href="/sign-in"
